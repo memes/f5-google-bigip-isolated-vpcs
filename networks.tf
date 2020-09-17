@@ -17,9 +17,18 @@ module "external" {
       subnet_private_access = true
     }
   ]
+  routes = [
+    {
+      name              = format("%s-ext-restricted-apis", var.prefix)
+      description       = format("Restricted API route (%s)", var.prefix)
+      destination_range = "199.36.153.4/30"
+      next_hop_internet = true
+    }
+  ]
 }
 
-# Management network - default routes to internet are removed, no private API access
+# Management network - default routes to internet are removed, custom route for
+# restricted API endpoints created, and private API access enabled
 module "management" {
   source                                 = "terraform-google-modules/network/google"
   version                                = "2.5.0"
@@ -35,19 +44,18 @@ module "management" {
       subnet_private_access = true
     }
   ]
-  /*
   routes = [
-      {
-          name = format("%s-restricted-apis", var.prefix)
-          description = format("Restricted API route (%s)", var.prefix)
-          destination_range = "199.36.153.4/30"
-          next_hop_internet = true
-      }
+    {
+      name              = format("%s-mgt-restricted-apis", var.prefix)
+      description       = format("Restricted API route (%s)", var.prefix)
+      destination_range = "199.36.153.4/30"
+      next_hop_internet = true
+    }
   ]
-  */
 }
 
-# Internal - no default routes to internet, no private API access
+# Internal - default routes to internet are removed, custom route for
+# restricted API endpoints created, and private API access enabled
 module "internal" {
   source                                 = "terraform-google-modules/network/google"
   version                                = "2.5.0"
@@ -61,6 +69,14 @@ module "internal" {
       subnet_ip             = "172.18.0.0/16"
       subnet_region         = local.region
       subnet_private_access = true
+    }
+  ]
+  routes = [
+    {
+      name              = format("%s-int-restricted-apis", var.prefix)
+      description       = format("Restricted API route (%s)", var.prefix)
+      destination_range = "199.36.153.4/30"
+      next_hop_internet = true
     }
   ]
 }

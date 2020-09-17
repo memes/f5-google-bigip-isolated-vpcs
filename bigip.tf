@@ -149,10 +149,13 @@ module "cfe" {
   external_subnetwork               = local.ext_subnet
   external_subnetwork_network_ips   = slice(module.ext_ips.addresses, 0, 2)
   external_subnetwork_vip_cidrs     = [element(module.ext_ips.addresses, 2)]
+  provision_external_public_ip      = false
   management_subnetwork             = local.mgt_subnet
   management_subnetwork_network_ips = module.mgt_ips.addresses
+  provision_management_public_ip    = false
   internal_subnetworks              = [local.int_subnet]
   internal_subnetwork_network_ips   = [for a in module.int_ips.addresses : [a]]
+  provision_internal_public_ip      = false
   image                             = var.image
   admin_password_secret_manager_key = google_secret_manager_secret.admin_password.secret_id
   labels                            = var.labels
