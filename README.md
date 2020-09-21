@@ -12,7 +12,7 @@ endpoints, and install run-time libraries from a GCS bucket.
 1. BIG-IP (and bastion) instances attempt to connect to Storage APIs.
 2. Cloud DNS private zone for `googleapis.com` has been injected into each VPC
    network; DNS returns a CNAME alias for `restricted.googleapis.com` for all
-   `googlepias.com` lookups.
+   `googleapis.com` lookups.
 3. A custom route provides a way to reach Google API endpoints from VMs to GCP
    services that does not traverse the public internet.
 4. GCS API endpoints in Google's private VPC respond.
