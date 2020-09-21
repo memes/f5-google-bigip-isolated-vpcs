@@ -44,11 +44,11 @@ done
 attempt=0
 while [ "$${attempt:-0}" -lt 10 ]; do
     curl -sLf --retry 20 -H "Authorization: Bearer $${auth_token}" \
-            -o /var/tmp/tinyproxy.rpm "${var.install_tinyproxy}"
+            -o /var/tmp/tinyproxy.rpm "${var.install_tinyproxy_url}"
     if [ "$?" -eq 0 ]; then
         break
     fi
-    info "Download of ${var.install_tinyproxy} failed: curl exit code: $?; sleeping before retry"
+    info "Download of ${var.install_tinyproxy_url} failed: curl exit code: $?; sleeping before retry"
     sleep 10
     attempt=$((attempt+1))
 done

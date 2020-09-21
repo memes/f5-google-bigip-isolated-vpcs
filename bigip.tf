@@ -7,8 +7,7 @@
 
 # Create a custom CFE role at the project
 module "cfe_role" {
-  #source              = "https://github.com/memes/f5-google-terraform-modules/modules/big-ip/cfe/role?ref=v1.1.0"
-  source      = "/Users/Emes/projects/automation/f5-google-terraform-modules//modules/big-ip/cfe/role/"
+  source      = "https://github.com/memes/f5-google-terraform-modules/modules/big-ip/cfe/role?ref=v1.1.0"
   target_type = "project"
   target_id   = var.project_id
 }
@@ -139,8 +138,7 @@ module "int_ips" {
 
 # Stand-up a 2 instance HA pair with CFE support
 module "cfe" {
-  #source = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe?ref=1.1.0"
-  source                            = "/Users/emes/projects/automation/f5-google-terraform-modules//modules/big-ip/cfe"
+  source                            = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe?ref=1.1.0"
   project_id                        = var.project_id
   instance_name_template            = format("%s-bigip-%%d", var.prefix)
   zones                             = var.bigip_zones
