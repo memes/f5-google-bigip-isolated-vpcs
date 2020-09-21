@@ -7,19 +7,33 @@ GCP where internet access is prohibited. The files will create a Cloud DNS
 private zone to shadow `*.googleapis.com` with `restricted.googleapis.com`
 endpoints, and install run-time libraries from a GCS bucket.
 
+![High-level architecture](images/isolated-vpcs-private-access-route.png)
+
+1. BIG-IP (and bastion) instances attempt to connect to Storage APIs.
+2. Cloud DNS private zone for `googleapis.com` has been injected into each VPC
+   network; DNS returns a CNAME alias for `restricted.googleapis.com` for all
+   `googlepias.com` lookups.
+3. A custom route provides a way to reach Google API endpoints from VMs to GCP
+   services that does not traverse the public internet.
+4. GCS API endpoints in Google's private VPC respond.
+
 ## Steps to execute
 
 1. Create or prepare a GCS bucket, or other HTTP host on the private network that
    can supply Cloud Libraries and supporting files as needed by BIG-IP and bastion
    host.
+
 2. Prepare Terraform config and variables setting files; you can make a copy of
    `env/emes` folder and modify the `base.config` and `base.tfvars` files to
    match your environment.
+
    * This repo assumes you have setup and enabled IAM impersonation for a
      Terraform service account; set `tf_sa_email` variable to empty string ("")
      to use your own credentials.
+
    * If you are using a GCS bucket to host RPMs, etc, use the scheme for encoding
      HTTP download requests as described at [Encoding URI path parts](https://cloud.google.com/storage/docs/request-endpoints#encoding).
+
 3. Initialise and execute Terraform
 
    Using `emes` configuration as an example.
