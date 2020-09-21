@@ -95,10 +95,10 @@ EOD
 }
 
 
-variable "install_tinyproxy" {
+variable "install_tinyproxy_url" {
   type        = string
   description = <<EOD
-Contains the URLs for tinyproxy RPM to install.
+Contains the URL for tinyproxy RPM to install on bastion host.
 EOD
 }
 
@@ -109,6 +109,6 @@ variable "cloud_libs_bucket" {
 An optional GCS bucket name to which the BIG-IP service account will be granted
 read-only access. Default is empty string.
 
-See `cloud_libs`.
+See `install_cloud_libs`.
 EOD
 }
