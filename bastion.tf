@@ -67,3 +67,29 @@ systemctl enable tinyproxy
 systemctl start tinyproxy
 EOD
 }
+
+# Allow bastion instance to ping BIG-IP instances, and connect to them on ports
+# 22 and 443
+resource "google_compute_firewall" "bastion_mgt" {
+  project     = var.project_id
+  name        = format("%s-allow-bastion-bigip-mgt", var.prefix)
+  network     = module.management.network_self_link
+  description = "Allow bastion to all BIG-IPs on management network"
+  direction   = "INGRESS"
+  source_service_accounts = [
+    module.bastion.service_account,
+  ]
+  target_service_accounts = [
+    local.bigip_sa,
+  ]
+  allow {
+    protocol = "tcp"
+    ports = [
+      22,
+      443,
+    ]
+  }
+  allow {
+    protocol = "icmp"
+  }
+}
