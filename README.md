@@ -153,14 +153,7 @@ endpoints, and install run-time libraries from a GCS bucket.
    Create an SSH tunnel through the bastion host and use tinyproxy to access
    instances.
 
-   1. Retrieve the admin password from Secret Manager
-
-      > NOTE: You will login as `admin` with the randomly generated password
-      > stored in Google's Secret Manager.
-
-      ![Secret Manager](images/secret_manager.png)
-
-   2. Create an IAP session for SSH to the bastion and tunnel between port 8888
+   1. Create an IAP session for SSH to the bastion and tunnel between port 8888
    on local computer and bastion. Tinyproxy has been configured to be active on
    port 8888 too.
 
@@ -168,11 +161,18 @@ endpoints, and install run-time libraries from a GCS bucket.
       gcloud compute ssh --project f5-gcs-4138-sales-cloud-sales --zone us-central1-f isolated-vpcs-bastion --tunnel-through-iap -- -A -L8888:127.0.0.1:8888
       ```
 
-   3. Set your browser to proxy HTTP and HTTPS traffic through localhost:8888
+      This command will ensure that your key is forwarded to the bastion so
+      you can SSH to a BIG-IP instance on it's management IP address
+
+   2. Set your browser to proxy HTTP and HTTPS traffic through localhost:8888
 
       ![Proxy Config](images/firefox_proxy_settings.png)
 
-   4. Login to a BIG-IP instance using `admin` account and password
+   3. Retrieve the random admin password from Secret Manager
+
+     ![Secret Manager](images/secret_manager.png)
+
+   4. Login to a BIG-IP instance using `admin` account and password from step 3
 
       ![BIG-IP Device List](images/cfe_pair.png)
 
