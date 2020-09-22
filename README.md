@@ -28,6 +28,9 @@ endpoints, and install run-time libraries from a GCS bucket.
 2. User account (or Terraform service account) with permissions to create
    resources, assign roles, and manage networks.
 
+3. GCS bucket or other HTTP(S)/FTP site accessible from the BIG-IP VMs to host
+   software packages
+
 ## Steps to execute
 
 1. Create or prepare a GCS bucket, or other HTTP host on the private network that
@@ -40,10 +43,16 @@ endpoints, and install run-time libraries from a GCS bucket.
 
    * This repo assumes you have setup and enabled IAM impersonation for a
      Terraform service account; set `tf_sa_email` variable to empty string ("")
-     to use your own credentials.
+     to use your own credentials or a service account via application-default
+     credentials.
 
    * If you are using a GCS bucket to host RPMs, etc, use the scheme for encoding
-     HTTP download requests as described at [Encoding URI path parts](https://cloud.google.com/storage/docs/request-endpoints#encoding).
+     HTTP download requests as described at
+     [Encoding URI path parts](https://cloud.google.com/storage/docs/request-endpoints#encoding)
+     and set `cloud_libs_bucket` variable to the name of the GCS bucket. Terraform
+     will ensure the BIG-IP and bastion service accounts have read-only access
+     to the bucket.
+
 
 3. Initialise and execute Terraform
 
