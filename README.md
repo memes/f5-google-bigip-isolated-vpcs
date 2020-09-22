@@ -17,6 +17,17 @@ endpoints, and install run-time libraries from a GCS bucket.
    services that does not traverse the public internet.
 4. GCS API endpoints in Google's private VPC respond.
 
+## Dependencies
+
+1. GCP project with APIs enabled
+   * Compute Engine - compute.googleapis.com
+   * Secret Manager - secretmanager.googleapis.com
+   * Storage JSON API - storage-api.googleapis.com
+   * Cloud DNS - dns.googleapis.com
+
+2. User account (or Terraform service account) with permissions to create
+   resources, assign roles, and manage networks.
+
 ## Steps to execute
 
 1. Create or prepare a GCS bucket, or other HTTP host on the private network that
