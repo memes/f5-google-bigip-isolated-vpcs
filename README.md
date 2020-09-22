@@ -21,6 +21,8 @@ endpoints, and install run-time libraries from a GCS bucket.
 
 1. GCP project with APIs enabled
    * Compute Engine - compute.googleapis.com
+   * IAP - iap.googleapis.com
+   * OS Login - oslogin.googleapis.com
    * Secret Manager - secretmanager.googleapis.com
    * Storage JSON API - storage-api.googleapis.com
    * Cloud DNS - dns.googleapis.com
