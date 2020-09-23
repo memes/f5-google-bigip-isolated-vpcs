@@ -7,7 +7,7 @@
 
 # Create a custom CFE role at the project
 module "cfe_role" {
-  source      = "https://github.com/memes/f5-google-terraform-modules/modules/big-ip/cfe/role?ref=v1.1.0"
+  source      = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe/role?ref=1.1.0"
   target_type = "project"
   target_id   = var.project_id
 }
@@ -52,6 +52,18 @@ locals {
       },
     }
   )]
+}
+
+# Enable ConfigSync firewall rules between BIG-IP instances using the opinionated
+# Firewall module for CFE
+module "cfe_fw" {
+  source                   = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe/firewall?ref=1.1.0"
+  project_id               = var.project_id
+  bigip_service_account    = local.bigip_sa
+  management_firewall_name = format("allow-configsync-mgt-%s", var.prefix)
+  management_network       = module.management.network_self_link
+  dataplane_firewall_name  = format("allow-configsync-int-%s", var.prefix)
+  dataplane_network        = module.internal.network_self_link
 }
 
 # memes' BIG-IP Terraform module *requires* use of GCP Secret Manager to set

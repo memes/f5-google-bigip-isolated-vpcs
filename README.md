@@ -17,6 +17,22 @@ endpoints, and install run-time libraries from a GCS bucket.
    services that does not traverse the public internet.
 4. GCS API endpoints in Google's private VPC respond.
 
+## Dependencies
+
+1. GCP project with APIs enabled
+   * Compute Engine - compute.googleapis.com
+   * IAP - iap.googleapis.com
+   * OS Login - oslogin.googleapis.com
+   * Secret Manager - secretmanager.googleapis.com
+   * Storage JSON API - storage-api.googleapis.com
+   * Cloud DNS - dns.googleapis.com
+
+2. User account (or Terraform service account) with permissions to create
+   resources, assign roles, and manage networks.
+
+3. GCS bucket or other HTTP(S)/FTP site accessible from the BIG-IP VMs to host
+   software packages
+
 ## Steps to execute
 
 1. Create or prepare a GCS bucket, or other HTTP host on the private network that
@@ -29,10 +45,29 @@ endpoints, and install run-time libraries from a GCS bucket.
 
    * This repo assumes you have setup and enabled IAM impersonation for a
      Terraform service account; set `tf_sa_email` variable to empty string ("")
-     to use your own credentials.
+     to use your own credentials or a service account via application-default
+     credentials.
 
    * If you are using a GCS bucket to host RPMs, etc, use the scheme for encoding
-     HTTP download requests as described at [Encoding URI path parts](https://cloud.google.com/storage/docs/request-endpoints#encoding).
+     HTTP download requests as described at
+     [Encoding URI path parts](https://cloud.google.com/storage/docs/request-endpoints#encoding)
+     and set `cloud_libs_bucket` variable to the name of the GCS bucket. Terraform
+     will ensure the BIG-IP and bastion service accounts have read-only access
+     to the bucket.
+
+     E.g using `automation-factory-f5-gcs-4138-sales-cloud-sales` bucket as a software repository:-
+
+     ```hcl
+     install_cloud_libs = [
+        "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ff5-cloud-libs.tar.gz?alt=media",
+        "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ff5-cloud-libs-gce.tar.gz?alt=media",
+        "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ff5-appsvcs-3.22.1-1.noarch.rpm?alt=media",
+        "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ff5-declarative-onboarding-1.15.0-3.noarch.rpm?alt=media",
+        "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ff5-cloud-failover-1.5.0-0.noarch.rpm?alt=media"
+     ]
+     install_tinyproxy_url = "https://storage.googleapis.com/storage/v1/b/automation-factory-f5-gcs-4138-sales-cloud-sales/o/misc%2Ftinyproxy-1.8.3-2.el7.x86_64.rpm?alt=media"
+     cloud_libs_bucket = "automation-factory-f5-gcs-4138-sales-cloud-sales"
+     ```
 
 3. Initialise and execute Terraform
 
@@ -118,14 +153,7 @@ endpoints, and install run-time libraries from a GCS bucket.
    Create an SSH tunnel through the bastion host and use tinyproxy to access
    instances.
 
-   1. Retrieve the admin password from Secret Manager
-
-      > NOTE: You will login as `admin` with the randomly generated password
-      > stored in Google's Secret Manager.
-
-      ![Secret Manager](images/secret_manager.png)
-
-   2. Create an IAP session for SSH to the bastion and tunnel between port 8888
+   1. Create an IAP session for SSH to the bastion and tunnel between port 8888
    on local computer and bastion. Tinyproxy has been configured to be active on
    port 8888 too.
 
@@ -133,11 +161,18 @@ endpoints, and install run-time libraries from a GCS bucket.
       gcloud compute ssh --project f5-gcs-4138-sales-cloud-sales --zone us-central1-f isolated-vpcs-bastion --tunnel-through-iap -- -A -L8888:127.0.0.1:8888
       ```
 
-   3. Set your browser to proxy HTTP and HTTPS traffic through localhost:8888
+      This command will ensure that your key is forwarded to the bastion so
+      you can SSH to a BIG-IP instance on it's management IP address
+
+   2. Set your browser to proxy HTTP and HTTPS traffic through localhost:8888
 
       ![Proxy Config](images/firefox_proxy_settings.png)
 
-   4. Login to a BIG-IP instance using `admin` account and password
+   3. Retrieve the random admin password from Secret Manager
+
+     ![Secret Manager](images/secret_manager.png)
+
+   4. Login to a BIG-IP instance using `admin` account and password from step 3
 
       ![BIG-IP Device List](images/cfe_pair.png)
 
