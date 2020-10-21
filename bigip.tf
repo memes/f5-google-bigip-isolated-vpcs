@@ -10,6 +10,7 @@ module "cfe_role" {
   source      = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe/role?ref=1.1.0"
   target_type = "project"
   target_id   = var.project_id
+  title       = format("CFE role for %s demo", var.prefix)
 }
 
 # Create a service account for BIG-IP
@@ -69,36 +70,19 @@ module "cfe_fw" {
 # memes' BIG-IP Terraform module *requires* use of GCP Secret Manager to set
 # Admin user password.
 
-# Create a random BIG-IP password for admin; avoid chars that can cause problems
-resource "random_password" "admin_password" {
-  length           = 16
-  special          = true
-  override_special = "@#%&*()-_=+[]<>:?"
-}
-
-# Create a slot for BIG-IP admin password in Secret Manager
-resource "google_secret_manager_secret" "admin_password" {
-  project   = var.project_id
-  secret_id = format("%s-bigip-admin-passwd-key", var.prefix)
-  replication {
-    automatic = true
-  }
-  labels = local.noncfe_resource_labels
-}
-
-# Store the BIG-IP password in the Secret Manager
-resource "google_secret_manager_secret_version" "admin_password" {
-  secret      = google_secret_manager_secret.admin_password.id
-  secret_data = random_password.admin_password.result
-}
-
-# Allow the supplied accounts to read the BIG-IP password from Secret Manager
-resource "google_secret_manager_secret_iam_member" "admin_password" {
-  for_each  = toset(formatlist("serviceAccount:%s", [local.bigip_sa]))
-  project   = var.project_id
-  secret_id = google_secret_manager_secret.admin_password.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = each.value
+# Create a random BIG-IP password for admin and store in Secret Manager; avoid
+# chars that can cause problems
+module "admin_password" {
+  source            = "memes/secret-manager/google//modules/random"
+  version           = "0.12.2"
+  project_id        = var.project_id
+  id                = format("%s-bigip-admin-passwd-key", var.prefix)
+  labels            = local.noncfe_resource_labels
+  accessors         = formatlist("serviceAccount:%s", [local.bigip_sa])
+  length            = 16
+  has_special_chars = true
+  min_special_chars = 1
+  special_char_set  = "@#%&*()-_=+[]<>:?"
 }
 
 # Reserve IP addresses for BIG-IP on external network
@@ -167,7 +151,7 @@ module "cfe" {
   internal_subnetwork_network_ips   = [for a in module.int_ips.addresses : [a]]
   provision_internal_public_ip      = false
   image                             = var.image
-  admin_password_secret_manager_key = google_secret_manager_secret.admin_password.secret_id
+  admin_password_secret_manager_key = module.admin_password.secret_id
   labels                            = var.labels
   cfe_label_key                     = var.cfe_label_key
   cfe_label_value                   = local.cfe_label_value

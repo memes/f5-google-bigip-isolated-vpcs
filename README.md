@@ -194,15 +194,15 @@ endpoints, and install run-time libraries from a GCS bucket.
 | Name | Version |
 |------|---------|
 | terraform | ~> 0.12 |
-| google | ~>3.39 |
-| google | ~>3.39 |
+| google | ~>3.44 |
+| google | ~>3.44 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| google | ~>3.39 ~>3.39 |
-| google.executor | ~>3.39 ~>3.39 |
+| google | ~>3.44 ~>3.44 |
+| google.executor | ~>3.44 ~>3.44 |
 | random | n/a |
 
 ## Inputs
