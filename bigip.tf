@@ -7,7 +7,8 @@
 
 # Create a custom CFE role at the project
 module "cfe_role" {
-  source      = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe/role?ref=1.1.0"
+  source      = "memes/f5-bigip/google//modules/cfe-role"
+  version     = "1.3.1"
   target_type = "project"
   target_id   = var.project_id
   title       = format("CFE role for %s demo", var.prefix)
@@ -58,7 +59,8 @@ locals {
 # Enable ConfigSync firewall rules between BIG-IP instances using the opinionated
 # Firewall module for CFE
 module "cfe_fw" {
-  source                   = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe/firewall?ref=1.1.0"
+  source                   = "memes/f5-bigip/google//modules/configsync-fw"
+  version                  = "1.3.1"
   project_id               = var.project_id
   bigip_service_account    = local.bigip_sa
   management_firewall_name = format("allow-configsync-mgt-%s", var.prefix)
@@ -134,7 +136,8 @@ module "int_ips" {
 
 # Stand-up a 2 instance HA pair with CFE support
 module "cfe" {
-  source                            = "git::https://github.com/memes/f5-google-terraform-modules//modules/big-ip/cfe?ref=1.1.0"
+  source                            = "memes/f5-bigip/google//modules/cfe"
+  version                           = "1.3.1"
   project_id                        = var.project_id
   instance_name_template            = format("%s-bigip-%%d", var.prefix)
   zones                             = var.bigip_zones
