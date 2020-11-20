@@ -6,7 +6,7 @@ EOD
 }
 
 output "admin_password_key" {
-  value       = google_secret_manager_secret.admin_password.id
+  value       = module.admin_password.id
   description = <<EOD
 The name of the Secret Manager key that contains the generated admin password.
 EOD

@@ -5,7 +5,7 @@
 # credenitals" indicates that the calling user must (re-)authenticate application
 # default credentials using `gcloud auth application-default login`.
 terraform {
-  required_version = "~> 0.12"
+  required_version = "~> 0.12, < 0.13"
   # The location and path for GCS state storage must be specified in an environment
   # file(s) via `-backend-config env/ENV/base.config`
   backend "gcs" {}
@@ -33,7 +33,7 @@ resource "random_id" "bucket" {
 # can be created with same prefix without waiting.
 module "cfe_bucket" {
   source     = "terraform-google-modules/cloud-storage/google"
-  version    = "1.6.0"
+  version    = "1.7.2"
   project_id = var.project_id
   prefix     = var.prefix
   names      = [random_id.bucket.hex]

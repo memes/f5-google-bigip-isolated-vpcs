@@ -1,8 +1,9 @@
+# spell-checker: ignore fileignoreconfig bigip
 fileignoreconfig:
 - filename: .github/workflows/pre-commit.yml
   checksum: 71fea73f97b2882cc899f729b9e9c2b79cd5a199aecdb9a28794e64d4fda859e
 - filename: bigip.tf
-  checksum: 46fdf3f730e4351a954dd16d0b2df040723f13c684eb83904217714e9d2306b9
+  checksum: 6a3be827b52b7a7bdd3897a79a531ed83649edf74a20f84412098025241c498e
 - filename: main.tf
   checksum: b9898dc3dc2c907dd9aa4dfb593f61c4d45edcbc91540f143642dc1951ac4f0b
 - filename: README.md

@@ -1,7 +1,7 @@
 # Create an IAP-backed bastion, installing tinyproxy from GCS bucket
 module "bastion" {
   source                     = "terraform-google-modules/bastion-host/google"
-  version                    = "2.7.0"
+  version                    = "2.10.0"
   project                    = var.project_id
   service_account_name       = format("%s-bastion", var.prefix)
   name                       = format("%s-bastion", var.prefix)
